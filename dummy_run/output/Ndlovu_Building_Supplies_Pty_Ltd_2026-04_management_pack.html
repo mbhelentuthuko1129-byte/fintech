@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Management Accounts — Ndlovu Building Supplies (Pty) Ltd — April 2026</title>
+<style>
+  /* ── Reset & Base ─────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px; line-height: 1.5; color: #1a1a2e; background: #f0f2f5;
+  }
+  @media print {
+    body { background: white; font-size: 11px; }
+    .no-print { display: none; }
+    .page-break { page-break-before: always; }
+  }
+
+  /* ── Layout ───────────────────────────────────────────────────────── */
+  .wrapper { max-width: 960px; margin: 0 auto; background: white; box-shadow: 0 2px 24px rgba(0,0,0,.10); }
+
+  /* ── Header ───────────────────────────────────────────────────────── */
+  .header {
+    background: linear-gradient(135deg, #0f2040 0%, #1a3a6e 100%);
+    color: white; padding: 28px 36px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .header-brand { display: flex; align-items: center; gap: 16px; }
+  .logo {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: #f4c542; color: #0f2040;
+    font-weight: 800; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -.2px; }
+  .header .subtitle { font-size: 12px; opacity: .75; margin-top: 2px; }
+  .header-meta { text-align: right; font-size: 11px; opacity: .70; line-height: 1.7; }
+  .header-meta strong { display: block; font-size: 14px; opacity: 1; color: #f4c542; }
+
+  /* ── Section ──────────────────────────────────────────────────────── */
+  .section { padding: 28px 36px; border-bottom: 1px solid #eef0f4; }
+  .section:last-child { border-bottom: none; }
+  .section-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; color: #6b7280; margin-bottom: 16px;
+    padding-bottom: 8px; border-bottom: 2px solid #e5e7eb;
+  }
+
+  /* ── KPI Grid ─────────────────────────────────────────────────────── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+    gap: 12px;
+  }
+  .kpi-card {
+    border-radius: 10px; padding: 16px; position: relative; overflow: hidden;
+    border: 1px solid #e5e7eb;
+  }
+  .kpi-card.green  { background: #f0fdf4; border-color: #86efac; }
+  .kpi-card.amber  { background: #fffbeb; border-color: #fcd34d; }
+  .kpi-card.red    { background: #fef2f2; border-color: #fca5a5; }
+  .kpi-label { font-size: 10px; font-weight: 600; text-transform: uppercase;
+               letter-spacing: .8px; color: #6b7280; margin-bottom: 6px; }
+  .kpi-value { font-size: 22px; font-weight: 800; color: #111827; line-height: 1; }
+  .kpi-value.green { color: #15803d; }
+  .kpi-value.amber { color: #b45309; }
+  .kpi-value.red   { color: #b91c1c; }
+  .kpi-benchmark {
+    font-size: 10px; color: #6b7280; margin-top: 6px;
+  }
+  .kpi-status-badge {
+    position: absolute; top: 10px; right: 10px;
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+  }
+  .kpi-card.green .kpi-status-badge { background: #16a34a; color: white; }
+  .kpi-card.amber .kpi-status-badge { background: #d97706; color: white; }
+  .kpi-card.red   .kpi-status-badge { background: #dc2626; color: white; }
+
+  /* ── Alerts ───────────────────────────────────────────────────────── */
+  .alert-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 16px; border-radius: 8px; margin-bottom: 8px;
+  }
+  .alert-item.HIGH   { background: #fef2f2; border-left: 4px solid #dc2626; }
+  .alert-item.MEDIUM { background: #fffbeb; border-left: 4px solid #d97706; }
+  .alert-badge {
+    font-size: 10px; font-weight: 700; letter-spacing: .5px;
+    padding: 2px 7px; border-radius: 20px; white-space: nowrap; margin-top: 1px;
+  }
+  .HIGH   .alert-badge { background: #fee2e2; color: #991b1b; }
+  .MEDIUM .alert-badge { background: #fef3c7; color: #92400e; }
+  .alert-text { font-size: 12px; color: #374151; }
+  .whatsapp-preview {
+    margin-top: 6px; font-size: 11px; color: #6b7280;
+    font-family: monospace; background: #f9fafb;
+    padding: 6px 10px; border-radius: 6px; border: 1px solid #e5e7eb;
+    white-space: pre-line;
+  }
+
+  /* ── P&L Table ────────────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .6px; color: #6b7280; text-align: right;
+    padding: 8px 10px; background: #f9fafb; border-bottom: 2px solid #e5e7eb;
+  }
+  th:first-child { text-align: left; }
+  td { padding: 7px 10px; text-align: right; border-bottom: 1px solid #f3f4f6; }
+  td:first-child { text-align: left; font-size: 12px; color: #374151; }
+  tr:hover td { background: #fafafa; }
+
+  .row-section td {
+    font-size: 10px; font-weight: 700; letter-spacing: .8px;
+    text-transform: uppercase; color: #9ca3af;
+    background: #f9fafb; padding: 6px 10px;
+  }
+  .row-subtotal td {
+    font-weight: 700; color: #111827; border-top: 1px solid #d1d5db;
+    border-bottom: 2px solid #d1d5db; font-size: 12px;
+  }
+  .row-total td {
+    font-weight: 800; font-size: 13px; color: #0f2040;
+    background: #f0f4ff; border-top: 2px solid #6366f1;
+    border-bottom: 2px solid #6366f1;
+  }
+  .row-margin td { font-size: 11px; color: #6b7280; font-style: italic; }
+
+  .amount { font-variant-numeric: tabular-nums; font-size: 12px; }
+  .var-good { color: #15803d; font-weight: 600; }
+  .var-bad  { color: #dc2626; font-weight: 600; }
+  .var-neutral { color: #6b7280; }
+
+  /* ── Commentary ───────────────────────────────────────────────────── */
+  .commentary-block { margin-bottom: 20px; }
+  .commentary-heading {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: #6366f1; margin-bottom: 8px;
+  }
+  .commentary-text {
+    font-size: 13px; color: #374151; line-height: 1.7;
+    padding: 14px 18px; background: #f9fafb;
+    border-radius: 8px; border-left: 3px solid #6366f1;
+  }
+  .commentary-source {
+    font-size: 10px; color: #9ca3af; margin-top: 16px; font-style: italic;
+  }
+
+  /* ── Balance Sheet ────────────────────────────────────────────────── */
+  .bs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .bs-block h3 {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .8px; color: #6b7280; margin-bottom: 10px;
+    padding-bottom: 6px; border-bottom: 1px solid #e5e7eb;
+  }
+  .bs-row {
+    display: flex; justify-content: space-between;
+    padding: 5px 0; border-bottom: 1px solid #f3f4f6; font-size: 12px;
+  }
+  .bs-row:last-child { border-bottom: none; }
+  .bs-name { color: #374151; }
+  .bs-amount { font-variant-numeric: tabular-nums; color: #111827; font-weight: 500; }
+  .bs-total {
+    display: flex; justify-content: space-between;
+    padding: 8px 0; font-weight: 700; font-size: 12px;
+    border-top: 2px solid #d1d5db; margin-top: 4px;
+  }
+
+  /* ── Footer ───────────────────────────────────────────────────────── */
+  .footer {
+    background: #0f2040; color: rgba(255,255,255,.5);
+    padding: 16px 36px; font-size: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer strong { color: rgba(255,255,255,.85); }
+  .delivery-row {
+    margin-top: 10px; padding: 12px 16px; background: #f0fdf4;
+    border-radius: 8px; border: 1px solid #86efac;
+    font-size: 12px; color: #166534;
+  }
+  .delivery-row strong { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- ── Header ──────────────────────────────────────────────────────── -->
+  <div class="header">
+    <div class="header-brand">
+      <div class="logo">FP</div>
+      <div>
+        <h1>Ndlovu Building Supplies (Pty) Ltd</h1>
+        <div class="subtitle">Management Accounts &mdash; April 2026</div>
+      </div>
+    </div>
+    <div class="header-meta">
+      <strong>April 2026</strong>
+      Generated: 10 May 2026 at 21:33<br>
+      Industry: Wholesale — Building & Construction Materials<br>
+      Currency: ZAR
+    </div>
+  </div>
+
+  <!-- ── KPI Dashboard ───────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Key Performance Indicators</div>
+    <div class="kpi-grid">
+      
+      <div class="kpi-card green">
+        <div class="kpi-status-badge">✓</div>
+        <div class="kpi-label">Gross Margin</div>
+        <div class="kpi-value green">35.0%</div>
+        <div class="kpi-benchmark">
+          Budget: 35.0%&ensp;|&ensp;On Target
+        </div>
+      </div>
+      
+      <div class="kpi-card amber">
+        <div class="kpi-status-badge">⚠</div>
+        <div class="kpi-label">EBITDA Margin</div>
+        <div class="kpi-value amber">14.8%</div>
+        <div class="kpi-benchmark">
+          Budget: 17.0%&ensp;|&ensp;Below Target
+        </div>
+      </div>
+      
+      <div class="kpi-card amber">
+        <div class="kpi-status-badge">⚠</div>
+        <div class="kpi-label">Net Profit Margin</div>
+        <div class="kpi-value amber">11.9%</div>
+        <div class="kpi-benchmark">
+          Budget: 14.4%&ensp;|&ensp;Below Target
+        </div>
+      </div>
+      
+      <div class="kpi-card amber">
+        <div class="kpi-status-badge">⚠</div>
+        <div class="kpi-label">Revenue vs Budget</div>
+        <div class="kpi-value amber">-7.6%</div>
+        <div class="kpi-benchmark">
+          Budget: 0.0%&ensp;|&ensp;Below Target
+        </div>
+      </div>
+      
+      <div class="kpi-card amber">
+        <div class="kpi-status-badge">⚠</div>
+        <div class="kpi-label">Debtor Days</div>
+        <div class="kpi-value amber">52.3 days</div>
+        <div class="kpi-benchmark">
+          Budget: 45.0 days&ensp;|&ensp;Below Target
+        </div>
+      </div>
+      
+      <div class="kpi-card green">
+        <div class="kpi-status-badge">✓</div>
+        <div class="kpi-label">Creditor Days</div>
+        <div class="kpi-value green">48.9 days</div>
+        <div class="kpi-benchmark">
+          Budget: 50.0 days&ensp;|&ensp;On Target
+        </div>
+      </div>
+      
+      <div class="kpi-card green">
+        <div class="kpi-status-badge">✓</div>
+        <div class="kpi-label">Current Ratio</div>
+        <div class="kpi-value green">2.39x</div>
+        <div class="kpi-benchmark">
+          Budget: 1.5x&ensp;|&ensp;On Target
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- ── Alerts ──────────────────────────────────────────────────────── -->
+  
+  <div class="section">
+    <div class="section-title">Alerts &amp; Notifications
+      <span style="font-weight:400;color:#dc2626">(4 triggered)</span>
+    </div>
+    
+    <div class="alert-item MEDIUM">
+      <span class="alert-badge">MEDIUM</span>
+      <div>
+        <div class="alert-text"><strong>EBITDA Margin</strong> — EBITDA Margin is 14.8% (below target of 17.0%)</div>
+        <div class="whatsapp-preview">*FinancePulse 🟡 Notice*
+*EBITDA Margin*: 14.8%  |  Target: 17.0%
+Please review your FinancePulse dashboard for details.</div>
+      </div>
+    </div>
+    
+    <div class="alert-item MEDIUM">
+      <span class="alert-badge">MEDIUM</span>
+      <div>
+        <div class="alert-text"><strong>Net Profit Margin</strong> — Net Profit Margin is 11.9% (below target of 14.4%)</div>
+        <div class="whatsapp-preview">*FinancePulse 🟡 Notice*
+*Net Profit Margin*: 11.9%  |  Target: 14.4%
+Please review your FinancePulse dashboard for details.</div>
+      </div>
+    </div>
+    
+    <div class="alert-item MEDIUM">
+      <span class="alert-badge">MEDIUM</span>
+      <div>
+        <div class="alert-text"><strong>Revenue vs Budget</strong> — Revenue vs Budget is -7.6% (below target of 0.0%)</div>
+        <div class="whatsapp-preview">*FinancePulse 🟡 Notice*
+*Revenue vs Budget*: -7.6%  |  Target: 0.0%
+Please review your FinancePulse dashboard for details.</div>
+      </div>
+    </div>
+    
+    <div class="alert-item MEDIUM">
+      <span class="alert-badge">MEDIUM</span>
+      <div>
+        <div class="alert-text"><strong>Debtor Days</strong> — Debtor Days is 52.3 days (above target of 45.0 days)</div>
+        <div class="whatsapp-preview">*FinancePulse 🟡 Notice*
+*Debtor Days*: 52.3 days  |  Target: 45.0 days
+Please review your FinancePulse dashboard for details.</div>
+      </div>
+    </div>
+    
+    <div style="margin-top:10px;font-size:11px;color:#6b7280">
+      ↑ WhatsApp messages sent automatically to +27821234567 at time of detection.
+    </div>
+  </div>
+  
+
+  <!-- ── Income Statement ───────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Income Statement — April 2026</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:30%">Line Item</th>
+          <th>Actual</th>
+          <th>Budget</th>
+          <th>Prior Month</th>
+          <th>Var (Budget)</th>
+          <th>Var %</th>
+          <th>Var (Prior)</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- Revenue -->
+        <tr class="row-section"><td colspan="7">Revenue</td></tr>
+        <tr class="row-subtotal">
+          <td>Total Revenue</td>
+          <td class="amount">R7,850,000</td>
+          <td class="amount">R8,500,000</td>
+          <td class="amount">R8,205,000</td>
+          <td class="amount var-bad">
+            R650,000</td>
+          <td class="var-bad">
+            -7.6%</td>
+          <td class="amount var-bad">
+            R355,000</td>
+        </tr>
+
+        <!-- COGS & Gross Profit -->
+        <tr class="row-section"><td colspan="7">Cost of Sales</td></tr>
+        <tr>
+          <td>Cost of Goods Sold</td>
+          <td class="amount">R5,102,500</td>
+          <td class="amount">R5,525,000</td>
+          <td class="amount">R5,333,250</td>
+          <td class="amount var-good">
+            R422,500</td>
+          <td class="var-good">
+            -7.6%</td>
+          <td class="amount">—</td>
+        </tr>
+        <tr class="row-subtotal">
+          <td>Gross Profit</td>
+          <td class="amount">R2,747,500</td>
+          <td class="amount">R2,975,000</td>
+          <td class="amount">R2,871,750</td>
+          <td class="amount var-bad">
+            R227,500</td>
+          <td class="var-bad">
+            -7.6%</td>
+          <td class="amount var-bad">
+            R124,250</td>
+        </tr>
+        <tr class="row-margin">
+          <td style="padding-left:16px">Gross Margin %</td>
+          <td>35.0%</td>
+          <td>35.0%</td>
+          <td>35.0%</td>
+          <td colspan="3" style="color:#6b7280">
+            +0.0% vs budget</td>
+        </tr>
+
+        <!-- Operating Expenses -->
+        <tr class="row-section"><td colspan="7">Operating Expenses</td></tr>
+        
+        <tr>
+          <td>Salaries & Wages</td>
+          <td class="amount">R856,000</td>
+          <td class="amount">R820,000</td>
+          <td class="amount">R842,000</td>
+          <td class="amount var-bad">
+            R36,000</td>
+          <td class="var-bad">
+            +4.4%</td>
+          <td class="amount">—</td>
+        </tr>
+        
+        <tr>
+          <td>Rent & Occupancy</td>
+          <td class="amount">R182,000</td>
+          <td class="amount">R180,000</td>
+          <td class="amount">R182,000</td>
+          <td class="amount var-bad">
+            R2,000</td>
+          <td class="var-bad">
+            +1.1%</td>
+          <td class="amount">—</td>
+        </tr>
+        
+        <tr>
+          <td>Transport & Logistics</td>
+          <td class="amount">R318,000</td>
+          <td class="amount">R300,000</td>
+          <td class="amount">R295,000</td>
+          <td class="amount var-bad">
+            R18,000</td>
+          <td class="var-bad">
+            +6.0%</td>
+          <td class="amount">—</td>
+        </tr>
+        
+        <tr>
+          <td>Marketing & Advertising</td>
+          <td class="amount">R83,000</td>
+          <td class="amount">R90,000</td>
+          <td class="amount">R91,000</td>
+          <td class="amount var-good">
+            R7,000</td>
+          <td class="var-good">
+            -7.8%</td>
+          <td class="amount">—</td>
+        </tr>
+        
+        <tr>
+          <td>Administration</td>
+          <td class="amount">R148,000</td>
+          <td class="amount">R140,000</td>
+          <td class="amount">R143,000</td>
+          <td class="amount var-bad">
+            R8,000</td>
+          <td class="var-bad">
+            +5.7%</td>
+          <td class="amount">—</td>
+        </tr>
+        
+        <tr>
+          <td>Depreciation</td>
+          <td class="amount">R95,000</td>
+          <td class="amount">R95,000</td>
+          <td class="amount">R95,000</td>
+          <td class="amount var-neutral">
+            R0</td>
+          <td class="var-neutral">
+            +0.0%</td>
+          <td class="amount">—</td>
+        </tr>
+        
+        <tr class="row-subtotal">
+          <td>Total Operating Expenses</td>
+          <td class="amount">R1,682,000</td>
+          <td class="amount">R1,625,000</td>
+          <td class="amount">R1,648,000</td>
+          <td class="amount var-bad">
+            R57,000</td>
+          <td class="var-bad">
+            +3.5%</td>
+          <td class="amount">—</td>
+        </tr>
+
+        <!-- EBITDA & Net -->
+        <tr class="row-subtotal">
+          <td>EBITDA</td>
+          <td class="amount">R1,160,500</td>
+          <td class="amount">R1,445,000</td>
+          <td class="amount">R1,318,750</td>
+          <td class="amount var-bad">
+            R284,500</td>
+          <td class="var-bad">
+            -19.7%</td>
+          <td class="amount var-bad">
+            R158,250</td>
+        </tr>
+        <tr class="row-margin">
+          <td style="padding-left:16px">EBITDA Margin %</td>
+          <td>14.8%</td>
+          <td>17.0%</td>
+          <td>16.1%</td>
+          <td colspan="3" style="color:#6b7280">
+            -2.2% vs budget</td>
+        </tr>
+        <tr>
+          <td>Finance Costs</td>
+          <td class="amount">R128,000</td>
+          <td class="amount">R125,000</td>
+          <td class="amount">R126,000</td>
+          <td colspan="3" style="color:#6b7280">—</td>
+        </tr>
+        <tr class="row-total">
+          <td>Net Profit Before Tax</td>
+          <td class="amount">R937,500</td>
+          <td class="amount">R1,225,000</td>
+          <td class="amount">R1,097,750</td>
+          <td class="amount var-bad">
+            R287,500</td>
+          <td class="var-bad">
+            -23.5%</td>
+          <td class="amount var-bad">
+            R160,250</td>
+        </tr>
+        <tr class="row-margin">
+          <td style="padding-left:16px">Net Profit Margin %</td>
+          <td>11.9%</td>
+          <td>14.4%</td>
+          <td>13.4%</td>
+          <td colspan="3"></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Management Commentary ──────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Management Commentary</div>
+    
+    <div class="commentary-block">
+      <div class="commentary-heading">EXECUTIVE SUMMARY</div>
+      <div class="commentary-text">Ndlovu Building Supplies (Pty) Ltd recorded revenue of R7,850,000 for April 2026, representing a shortfall of R650,000 (7.6%) against the budget of R8,500,000 and 4.3% below the prior month of R8,205,000. Gross margin held at 35.0% (budget 35.0%), reflecting sound pricing discipline despite lower volumes. EBITDA of R1,160,500 (14.8% margin) was below the budgeted 17.0%, driven primarily by the revenue shortfall. Net profit of R937,500 (11.9% margin) represents a resilient result.</div>
+    </div>
+    
+    <div class="commentary-block">
+      <div class="commentary-heading">REVENUE & GROSS PROFIT</div>
+      <div class="commentary-text">Revenue of R7,850,000 was R650,000 (7.6%) below budget of R8,500,000, with the shortfall concentrated in Hardware & Tools and Cement product lines, likely reflecting a seasonal slowdown in contractor activity during April. Gross profit of R2,747,500 was similarly below budget, however the gross margin of 35.0% was in line with the budget of 35.0% and consistent with the prior month (35.0%), confirming that pricing and cost-of-sales management remained disciplined.</div>
+    </div>
+    
+    <div class="commentary-block">
+      <div class="commentary-heading">COST ANALYSIS</div>
+      <div class="commentary-text">Total operating expenditure of R1,682,000 was R57,000 over budget. Salaries and wages of R856,000 were R36,000 over budget (overtime of R85,000 vs budgeted R60,000, likely linked to stock-take activities). Transport and logistics of R318,000 were R18,000 over budget, driven by increased use of third-party logistics to service outlying customers. All remaining cost lines were within 5% of budget, indicating good cost discipline across administration and occupancy.</div>
+    </div>
+    
+    <div class="commentary-block">
+      <div class="commentary-heading">BALANCE SHEET & LIQUIDITY</div>
+      <div class="commentary-text">The balance sheet remains sound with a current ratio of 2.39x (target 1.5x), indicating adequate short-term liquidity. Trade debtors stand at R13,500,000, representing 52.3 debtor days — above the 45.0-day target. Management should prioritise collection of invoices in the 60–90 day bucket to reduce working capital pressure. Creditor days of 48.9 are within the target range. Inventory at R6,200,000 appears appropriate for current trading volumes.</div>
+    </div>
+    
+    <div class="commentary-source">Generated by: Smart template  (set ANTHROPIC_API_KEY to use Claude)</div>
+  </div>
+
+  <!-- ── Balance Sheet ───────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Balance Sheet — April 2026</div>
+    <div class="bs-grid">
+
+      <!-- Assets -->
+      <div class="bs-block">
+        <h3>Assets</h3>
+        <div style="margin-bottom:12px">
+          <div style="font-size:10px;font-weight:600;color:#6b7280;margin-bottom:6px">CURRENT ASSETS</div>
+          
+          <div class="bs-row">
+            <span class="bs-name">Standard Bank — Cheque Account</span>
+            <span class="bs-amount">R1,245,000</span>
+          </div>
+          
+          <div class="bs-row">
+            <span class="bs-name">Trade Debtors</span>
+            <span class="bs-amount">R13,500,000</span>
+          </div>
+          
+          <div class="bs-row">
+            <span class="bs-name">Other Debtors & Deposits</span>
+            <span class="bs-amount">R125,000</span>
+          </div>
+          
+          <div class="bs-row">
+            <span class="bs-name">Inventory</span>
+            <span class="bs-amount">R6,200,000</span>
+          </div>
+          
+          <div class="bs-row">
+            <span class="bs-name">Prepayments</span>
+            <span class="bs-amount">R185,000</span>
+          </div>
+          
+          <div class="bs-total">
+            <span>Total Current Assets</span>
+            <span>R21,255,000</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;color:#6b7280;margin-bottom:6px">NON-CURRENT ASSETS</div>
+          
+          <div class="bs-row">
+            <span class="bs-name">Property, Plant & Equipment (Net)</span>
+            <span class="bs-amount">R3,850,000</span>
+          </div>
+          
+          <div class="bs-total">
+            <span>Total Non-current Assets</span>
+            <span>R3,850,000</span>
+          </div>
+        </div>
+        <div class="bs-total" style="font-size:14px;border-top:2px solid #0f2040;margin-top:8px">
+          <span>TOTAL ASSETS</span>
+          <span>R25,105,000</span>
+        </div>
+      </div>
+
+      <!-- Liabilities & Equity -->
+      <div class="bs-block">
+        <h3>Liabilities &amp; Equity</h3>
+        <div style="margin-bottom:12px">
+          <div style="font-size:10px;font-weight:600;color:#6b7280;margin-bottom:6px">CURRENT LIABILITIES</div>
+          
+          <div class="bs-row">
+            <span class="bs-name">Trade Creditors</span>
+            <span class="bs-amount">R8,200,000</span>
+          </div>
+          
+          <div class="bs-row">
+            <span class="bs-name">VAT Payable</span>
+            <span class="bs-amount">R245,000</span>
+          </div>
+          
+          <div class="bs-row">
+            <span class="bs-name">PAYE & SDL Payable</span>
+            <span class="bs-amount">R118,000</span>
+          </div>
+          
+          <div class="bs-row">
+            <span class="bs-name">Accruals</span>
+            <span class="bs-amount">R320,000</span>
+          </div>
+          
+          <div class="bs-total">
+            <span>Total Current Liabilities</span>
+            <span>R8,883,000</span>
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:10px;font-weight:600;color:#6b7280;margin-bottom:6px">NON-CURRENT LIABILITIES</div>
+          
+          <div class="bs-row">
+            <span class="bs-name">Standard Bank Term Loan</span>
+            <span class="bs-amount">R5,800,000</span>
+          </div>
+          
+          <div class="bs-total">
+            <span>Total Non-current Liabilities</span>
+            <span>R5,800,000</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;color:#6b7280;margin-bottom:6px">EQUITY</div>
+          
+          <div class="bs-row">
+            <span class="bs-name">Share Capital</span>
+            <span class="bs-amount">R500,000</span>
+          </div>
+          
+          <div class="bs-row">
+            <span class="bs-name">Retained Earnings</span>
+            <span class="bs-amount">R9,922,000</span>
+          </div>
+          
+          <div class="bs-total">
+            <span>Total Equity</span>
+            <span>R10,422,000</span>
+          </div>
+        </div>
+        <div class="bs-total" style="font-size:14px;border-top:2px solid #0f2040;margin-top:8px">
+          <span>TOTAL LIABILITIES &amp; EQUITY</span>
+          <span>R25,105,000</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Delivery confirmation ───────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Delivery Log</div>
+    <div class="delivery-row">
+      <strong>✓ Email</strong> delivered to sipho@ndlovusupplies.co.za
+      and zanele@ndlovusupplies.co.za &mdash; 10 May 2026 at 21:33
+    </div>
+    <div class="delivery-row" style="margin-top:8px">
+      <strong>✓ WhatsApp</strong> notification sent to +27821234567 &mdash; 10 May 2026 at 21:33
+    </div>
+    <div class="delivery-row" style="margin-top:8px;background:#f0f4ff;border-color:#6366f1;color:#3730a3">
+      <strong>✓ Dashboard</strong> live at financepulse.app/dashboard/ndlovu-building-supplies
+    </div>
+  </div>
+
+  <!-- ── Footer ──────────────────────────────────────────────────────── -->
+  <div class="footer">
+    <div>
+      <strong>FinancePulse</strong> &mdash; Finance Workflow Infrastructure<br>
+      Confidential management report for Ndlovu Building Supplies (Pty) Ltd only
+    </div>
+    <div style="text-align:right">
+      Run ID: 1<br>
+      April 2026 &mdash; 10 May 2026 at 21:33
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
