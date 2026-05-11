@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinancePulse — Ndlovu Building Supplies — April 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;line-height:1.5;color:#1a1a2e;background:#f0f2f5}
+.wrap{max-width:960px;margin:0 auto;background:#fff;box-shadow:0 2px 24px rgba(0,0,0,.1)}
+/* download bar */
+.dlbar{position:sticky;top:0;z-index:999;background:#0f2040;color:#fff;padding:11px 28px;display:flex;align-items:center;justify-content:space-between;font-size:12px}
+.dlbar button{background:#f4c542;color:#0f2040;border:none;padding:7px 20px;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px}
+/* header */
+.hdr{background:linear-gradient(135deg,#0f2040,#1a3a6e);color:#fff;padding:24px 32px;display:flex;justify-content:space-between;align-items:center}
+.hbrand{display:flex;align-items:center;gap:14px}
+.logo{width:44px;height:44px;border-radius:8px;background:#f4c542;color:#0f2040;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center}
+.hdr h1{font-size:17px;font-weight:700}
+.hsub{font-size:11px;opacity:.75;margin-top:2px}
+.hmeta{text-align:right;font-size:11px;opacity:.7;line-height:1.7}
+.hmeta strong{display:block;font-size:13px;opacity:1;color:#f4c542}
+/* section */
+.sec{padding:24px 32px;border-bottom:1px solid #eef0f4}
+.stitle{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#6b7280;margin-bottom:14px;padding-bottom:7px;border-bottom:2px solid #e5e7eb}
+/* kpi */
+.kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.kcard{border-radius:8px;padding:14px;position:relative;border:1px solid #e5e7eb}
+.kcard.g{background:#f0fdf4;border-color:#86efac}
+.kcard.a{background:#fffbeb;border-color:#fcd34d}
+.kcard.r{background:#fef2f2;border-color:#fca5a5}
+.klbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#6b7280;margin-bottom:5px}
+.kval{font-size:20px;font-weight:800;line-height:1}
+.kcard.g .kval{color:#15803d}.kcard.a .kval{color:#b45309}.kcard.r .kval{color:#b91c1c}
+.kbench{font-size:10px;color:#6b7280;margin-top:5px}
+.kbadge{position:absolute;top:9px;right:9px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.kcard.g .kbadge{background:#16a34a;color:#fff}.kcard.a .kbadge{background:#d97706;color:#fff}.kcard.r .kbadge{background:#dc2626;color:#fff}
+/* alerts */
+.al{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:7px;margin-bottom:7px}
+.al.M{background:#fffbeb;border-left:4px solid #d97706}
+.al.H{background:#fef2f2;border-left:4px solid #dc2626}
+.abadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;white-space:nowrap;margin-top:1px}
+.M .abadge{background:#fef3c7;color:#92400e}.H .abadge{background:#fee2e2;color:#991b1b}
+.atxt{font-size:12px;color:#374151}
+.wap{margin-top:5px;font-size:11px;color:#6b7280;font-family:monospace;background:#f9fafb;padding:5px 9px;border-radius:5px;border:1px solid #e5e7eb;white-space:pre-line}
+/* table */
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6b7280;text-align:right;padding:7px 9px;background:#f9fafb;border-bottom:2px solid #e5e7eb}
+th:first-child{text-align:left}
+td{padding:6px 9px;text-align:right;border-bottom:1px solid #f3f4f6;font-size:12px}
+td:first-child{text-align:left;color:#374151}
+tr:hover td{background:#fafafa}
+.rs td{font-size:10px;font-weight:700;text-transform:uppercase;color:#9ca3af;background:#f9fafb;padding:5px 9px}
+.rt td{font-weight:700;color:#111827;border-top:1px solid #d1d5db;border-bottom:2px solid #d1d5db}
+.rtt td{font-weight:800;color:#0f2040;background:#f0f4ff;border-top:2px solid #6366f1;border-bottom:2px solid #6366f1}
+.rm td{font-size:11px;color:#6b7280;font-style:italic}
+.vg{color:#15803d;font-weight:600}.vb{color:#dc2626;font-weight:600}.vn{color:#6b7280}
+/* commentary */
+.cblock{margin-bottom:18px}
+.ch{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6366f1;margin-bottom:7px}
+.ct{font-size:13px;color:#374151;line-height:1.7;padding:12px 16px;background:#f9fafb;border-radius:7px;border-left:3px solid #6366f1}
+.csrc{font-size:10px;color:#9ca3af;margin-top:14px;font-style:italic}
+/* balance sheet */
+.bsgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.bsblock h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#6b7280;margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid #e5e7eb}
+.bsr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f3f4f6;font-size:12px}
+.bsr:last-child{border-bottom:none}
+.bstot{display:flex;justify-content:space-between;padding:7px 0;font-weight:700;font-size:12px;border-top:2px solid #d1d5db;margin-top:3px}
+/* delivery */
+.drow{margin-top:9px;padding:11px 14px;background:#f0fdf4;border-radius:7px;border:1px solid #86efac;font-size:12px;color:#166534}
+/* footer */
+.ftr{background:#0f2040;color:rgba(255,255,255,.5);padding:14px 32px;font-size:10px;display:flex;justify-content:space-between;align-items:center}
+.ftr strong{color:rgba(255,255,255,.85)}
+</style>
+</head>
+<body>
+
+<div class="dlbar">
+  <span>📄 <strong>FinancePulse</strong> &mdash; Ndlovu Building Supplies &mdash; April 2026</span>
+  <button onclick="(function(){var b=new Blob([document.documentElement.outerHTML],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='FinancePulse_Ndlovu_April2026.html';a.click()})()">⬇ Download HTML</button>
+</div>
+
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="hbrand">
+      <div class="logo">FP</div>
+      <div>
+        <h1>Ndlovu Building Supplies (Pty) Ltd</h1>
+        <div class="hsub">Management Accounts &mdash; April 2026</div>
+      </div>
+    </div>
+    <div class="hmeta">
+      <strong>April 2026</strong>
+      Generated: 10 May 2026 at 21:33<br>
+      Wholesale &mdash; Building &amp; Construction Materials<br>
+      Currency: ZAR
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="sec">
+    <div class="stitle">Key Performance Indicators</div>
+    <div class="kgrid">
+      <div class="kcard g"><div class="kbadge">✓</div><div class="klbl">Gross Margin</div><div class="kval">35.0%</div><div class="kbench">Budget: 35.0% | On Target</div></div>
+      <div class="kcard a"><div class="kbadge">⚠</div><div class="klbl">EBITDA Margin</div><div class="kval">14.8%</div><div class="kbench">Budget: 17.0% | Below Target</div></div>
+      <div class="kcard a"><div class="kbadge">⚠</div><div class="klbl">Net Profit Margin</div><div class="kval">11.9%</div><div class="kbench">Budget: 14.4% | Below Target</div></div>
+      <div class="kcard a"><div class="kbadge">⚠</div><div class="klbl">Revenue vs Budget</div><div class="kval">-7.6%</div><div class="kbench">Budget: 0.0% | Below Target</div></div>
+      <div class="kcard a"><div class="kbadge">⚠</div><div class="klbl">Debtor Days</div><div class="kval">52.3d</div><div class="kbench">Target: 45 days | Below Target</div></div>
+      <div class="kcard g"><div class="kbadge">✓</div><div class="klbl">Creditor Days</div><div class="kval">48.9d</div><div class="kbench">Target: 50 days | On Target</div></div>
+      <div class="kcard g"><div class="kbadge">✓</div><div class="klbl">Current Ratio</div><div class="kval">2.39x</div><div class="kbench">Target: 1.5x | On Target</div></div>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div class="sec">
+    <div class="stitle">Alerts &amp; Notifications <span style="color:#dc2626;font-weight:400">(4 triggered)</span></div>
+    <div class="al M"><span class="abadge">MEDIUM</span><div><div class="atxt"><strong>EBITDA Margin</strong> — 14.8% below target of 17.0%</div><div class="wap">*FinancePulse 🟡 Notice*
+*EBITDA Margin*: 14.8% | Target: 17.0%
+Please review your FinancePulse dashboard.</div></div></div>
+    <div class="al M"><span class="abadge">MEDIUM</span><div><div class="atxt"><strong>Net Profit Margin</strong> — 11.9% below target of 14.4%</div><div class="wap">*FinancePulse 🟡 Notice*
+*Net Profit Margin*: 11.9% | Target: 14.4%
+Please review your FinancePulse dashboard.</div></div></div>
+    <div class="al M"><span class="abadge">MEDIUM</span><div><div class="atxt"><strong>Revenue vs Budget</strong> — -7.6% below target of 0.0%</div><div class="wap">*FinancePulse 🟡 Notice*
+*Revenue vs Budget*: -7.6% | Target: 0.0%
+Please review your FinancePulse dashboard.</div></div></div>
+    <div class="al M"><span class="abadge">MEDIUM</span><div><div class="atxt"><strong>Debtor Days</strong> — 52.3 days above target of 45 days</div><div class="wap">*FinancePulse 🟡 Notice*
+*Debtor Days*: 52.3 days | Target: 45.0 days
+Please review your FinancePulse dashboard.</div></div></div>
+    <div style="margin-top:9px;font-size:11px;color:#6b7280">↑ WhatsApp messages sent automatically to +27821234567 at time of detection.</div>
+  </div>
+
+  <!-- Income Statement -->
+  <div class="sec">
+    <div class="stitle">Income Statement &mdash; April 2026</div>
+    <table>
+      <thead><tr><th style="width:28%">Line Item</th><th>Actual</th><th>Budget</th><th>Prior Month</th><th>Var (Budget)</th><th>Var %</th></tr></thead>
+      <tbody>
+        <tr class="rs"><td colspan="6">Revenue</td></tr>
+        <tr class="rt"><td>Total Revenue</td><td>R7,850,000</td><td>R8,500,000</td><td>R8,205,000</td><td class="vb">-R650,000</td><td class="vb">-7.6%</td></tr>
+        <tr class="rs"><td colspan="6">Cost of Sales</td></tr>
+        <tr><td>Cost of Goods Sold</td><td>R5,102,500</td><td>R5,525,000</td><td>R5,333,250</td><td class="vg">-R422,500</td><td class="vg">-7.6%</td></tr>
+        <tr class="rt"><td>Gross Profit</td><td>R2,747,500</td><td>R2,975,000</td><td>R2,871,750</td><td class="vb">-R227,500</td><td class="vb">-7.6%</td></tr>
+        <tr class="rm"><td style="padding-left:14px">Gross Margin %</td><td>35.0%</td><td>35.0%</td><td>35.0%</td><td colspan="2" style="color:#6b7280">+0.0% vs budget</td></tr>
+        <tr class="rs"><td colspan="6">Operating Expenses</td></tr>
+        <tr><td>Salaries &amp; Wages</td><td>R856,000</td><td>R820,000</td><td>R842,000</td><td class="vb">+R36,000</td><td class="vb">+4.4%</td></tr>
+        <tr><td>Rent &amp; Occupancy</td><td>R182,000</td><td>R180,000</td><td>R182,000</td><td class="vb">+R2,000</td><td class="vb">+1.1%</td></tr>
+        <tr><td>Transport &amp; Logistics</td><td>R318,000</td><td>R300,000</td><td>R295,000</td><td class="vb">+R18,000</td><td class="vb">+6.0%</td></tr>
+        <tr><td>Marketing &amp; Advertising</td><td>R83,000</td><td>R90,000</td><td>R91,000</td><td class="vg">-R7,000</td><td class="vg">-7.8%</td></tr>
+        <tr><td>Administration</td><td>R148,000</td><td>R140,000</td><td>R143,000</td><td class="vb">+R8,000</td><td class="vb">+5.7%</td></tr>
+        <tr><td>Depreciation</td><td>R95,000</td><td>R95,000</td><td>R95,000</td><td class="vn">R0</td><td class="vn">0.0%</td></tr>
+        <tr class="rt"><td>Total Operating Expenses</td><td>R1,682,000</td><td>R1,625,000</td><td>R1,648,000</td><td class="vb">+R57,000</td><td class="vb">+3.5%</td></tr>
+        <tr class="rt"><td>EBITDA</td><td>R1,160,500</td><td>R1,445,000</td><td>R1,318,750</td><td class="vb">-R284,500</td><td class="vb">-19.7%</td></tr>
+        <tr class="rm"><td style="padding-left:14px">EBITDA Margin %</td><td>14.8%</td><td>17.0%</td><td>16.1%</td><td colspan="2" style="color:#6b7280">-2.2% vs budget</td></tr>
+        <tr><td>Finance Costs</td><td>R128,000</td><td>R125,000</td><td>R126,000</td><td colspan="2" style="color:#6b7280">—</td></tr>
+        <tr class="rtt"><td>Net Profit Before Tax</td><td>R937,500</td><td>R1,225,000</td><td>R1,097,750</td><td class="vb">-R287,500</td><td class="vb">-23.5%</td></tr>
+        <tr class="rm"><td style="padding-left:14px">Net Profit Margin %</td><td>11.9%</td><td>14.4%</td><td>13.4%</td><td colspan="2"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Commentary -->
+  <div class="sec">
+    <div class="stitle">Management Commentary</div>
+    <div class="cblock">
+      <div class="ch">Executive Summary</div>
+      <div class="ct">Ndlovu Building Supplies (Pty) Ltd recorded revenue of R7,850,000 for April 2026, representing a shortfall of R650,000 (7.6%) against the budget of R8,500,000 and 4.3% below the prior month of R8,205,000. Gross margin held at 35.0% (budget 35.0%), reflecting sound pricing discipline despite lower volumes. EBITDA of R1,160,500 (14.8% margin) was below the budgeted 17.0%, driven primarily by the revenue shortfall. Net profit of R937,500 (11.9% margin) represents a resilient result.</div>
+    </div>
+    <div class="cblock">
+      <div class="ch">Revenue &amp; Gross Profit</div>
+      <div class="ct">Revenue of R7,850,000 was R650,000 (7.6%) below budget of R8,500,000, with the shortfall concentrated in Hardware &amp; Tools and Cement product lines, likely reflecting a seasonal slowdown in contractor activity during April. Gross margin of 35.0% was in line with budget and consistent with the prior month (35.0%), confirming that pricing and cost-of-sales management remained disciplined.</div>
+    </div>
+    <div class="cblock">
+      <div class="ch">Cost Analysis</div>
+      <div class="ct">Total operating expenditure of R1,682,000 was R57,000 over budget. Salaries and wages of R856,000 were R36,000 over budget — overtime of R85,000 vs budgeted R60,000, likely linked to stock-take activities. Transport and logistics of R318,000 were R18,000 over budget, driven by increased use of third-party logistics to service outlying customers. All other cost lines were within 5% of budget.</div>
+    </div>
+    <div class="cblock">
+      <div class="ch">Balance Sheet &amp; Liquidity</div>
+      <div class="ct">The balance sheet remains sound with a current ratio of 2.39x (target 1.5x), indicating adequate short-term liquidity. Trade debtors stand at R13,500,000, representing 52.3 debtor days — above the 45-day target. Management should prioritise collection of invoices in the 60–90 day bucket to reduce working capital pressure. Creditor days of 48.9 are within the target range. Inventory at R6,200,000 appears appropriate for current trading volumes.</div>
+    </div>
+    <div class="csrc">Generated by: FinancePulse Smart Commentary Engine (set ANTHROPIC_API_KEY to use Claude)</div>
+  </div>
+
+  <!-- Balance Sheet -->
+  <div class="sec">
+    <div class="stitle">Balance Sheet &mdash; April 2026</div>
+    <div class="bsgrid">
+      <div class="bsblock">
+        <h3>Assets</h3>
+        <div style="margin-bottom:10px">
+          <div style="font-size:10px;font-weight:600;color:#6b7280;margin-bottom:5px">CURRENT ASSETS</div>
+          <div class="bsr"><span>Standard Bank — Cheque Account</span><span>R1,245,000</span></div>
+          <div class="bsr"><span>Trade Debtors</span><span>R13,500,000</span></div>
+          <div class="bsr"><span>Other Debtors &amp; Deposits</span><span>R125,000</span></div>
+          <div class="bsr"><span>Inventory</span><span>R6,200,000</span></div>
+          <div class="bsr"><span>Prepayments</span><span>R185,000</span></div>
+          <div class="bstot"><span>Total Current Assets</span><span>R21,255,000</span></div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;color:#6b7280;margin-bottom:5px">NON-CURRENT ASSETS</div>
+          <div class="bsr"><span>Property, Plant &amp; Equipment (Net)</span><span>R3,850,000</span></div>
+          <div class="bstot"><span>Total Non-current Assets</span><span>R3,850,000</span></div>
+        </div>
+        <div class="bstot" style="font-size:14px;border-top:2px solid #0f2040;margin-top:7px"><span>TOTAL ASSETS</span><span>R25,105,000</span></div>
+      </div>
+      <div class="bsblock">
+        <h3>Liabilities &amp; Equity</h3>
+        <div style="margin-bottom:10px">
+          <div style="font-size:10px;font-weight:600;color:#6b7280;margin-bottom:5px">CURRENT LIABILITIES</div>
+          <div class="bsr"><span>Trade Creditors</span><span>R8,200,000</span></div>
+          <div class="bsr"><span>VAT Payable</span><span>R245,000</span></div>
+          <div class="bsr"><span>PAYE &amp; SDL Payable</span><span>R118,000</span></div>
+          <div class="bsr"><span>Accruals</span><span>R320,000</span></div>
+          <div class="bstot"><span>Total Current Liabilities</span><span>R8,883,000</span></div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="font-size:10px;font-weight:600;color:#6b7280;margin-bottom:5px">NON-CURRENT LIABILITIES</div>
+          <div class="bsr"><span>Standard Bank Term Loan</span><span>R5,800,000</span></div>
+          <div class="bstot"><span>Total Non-current Liabilities</span><span>R5,800,000</span></div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;color:#6b7280;margin-bottom:5px">EQUITY</div>
+          <div class="bsr"><span>Share Capital</span><span>R500,000</span></div>
+          <div class="bsr"><span>Retained Earnings</span><span>R9,922,000</span></div>
+          <div class="bstot"><span>Total Equity</span><span>R10,422,000</span></div>
+        </div>
+        <div class="bstot" style="font-size:14px;border-top:2px solid #0f2040;margin-top:7px"><span>TOTAL LIABILITIES &amp; EQUITY</span><span>R25,105,000</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delivery -->
+  <div class="sec">
+    <div class="stitle">Delivery Log</div>
+    <div class="drow"><strong>✓ Email</strong> delivered to sipho@ndlovusupplies.co.za and zanele@ndlovusupplies.co.za — 10 May 2026 at 21:33</div>
+    <div class="drow" style="margin-top:7px"><strong>✓ WhatsApp</strong> notification sent to +27821234567 — 10 May 2026 at 21:33</div>
+    <div class="drow" style="margin-top:7px;background:#f0f4ff;border-color:#6366f1;color:#3730a3"><strong>✓ Dashboard</strong> live at financepulse.app/dashboard/ndlovu-building-supplies</div>
+  </div>
+
+  <div class="ftr">
+    <div><strong>FinancePulse</strong> &mdash; Finance Workflow Infrastructure<br>Confidential — Ndlovu Building Supplies (Pty) Ltd</div>
+    <div style="text-align:right">Run ID: 1 &mdash; April 2026</div>
+  </div>
+
+</div>
+</body>
+</html>
