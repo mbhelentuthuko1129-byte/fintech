@@ -1,0 +1,3 @@
+The 8th practical for COS132 is on const char pointers and file streams.
+Natural language processing is a fascinating field of study.
+It enables computers to understand human language... Really!
