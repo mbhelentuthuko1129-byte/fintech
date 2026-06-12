@@ -138,8 +138,19 @@ def process_image_message(
     )
     db.increment_usage(business_id)
 
+    # Phase 3: a verified payment may settle an open order.
+    settled_order = None
+    if decision.verdict == Verdict.VERIFIED:
+        from app.services.orders import settle_order_for_submission
+
+        settled_order = settle_order_for_submission(
+            business_id, submission["id"], extraction, customer["id"]
+        )
+
     # 9. Notify the business owner.
     message = whatsapp.format_verdict_message(extraction, decision)
+    if settled_order:
+        message += f"\n\n🧾 Order *{settled_order}* marked as paid."
     try:
         whatsapp.send_text(phone_number_id, owner_number, message)
     except Exception:

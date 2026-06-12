@@ -239,6 +239,111 @@ def mark_reminders_paid(business_id: str, customer_id: str, amount: float) -> No
     ).execute()
 
 
+# --- products / orders (Phase 3) ------------------------------------------------
+
+
+def list_products(business_id: str) -> list[dict[str, Any]]:
+    resp = (
+        get_client()
+        .table("products")
+        .select("*")
+        .eq("business_id", business_id)
+        .eq("active", True)
+        .order("name")
+        .execute()
+    )
+    return resp.data or []
+
+
+def upsert_product(business_id: str, name: str, price: float) -> dict[str, Any]:
+    resp = (
+        get_client()
+        .table("products")
+        .upsert(
+            {"business_id": business_id, "name": name, "price": price, "active": True},
+            on_conflict="business_id,name",
+        )
+        .execute()
+    )
+    return resp.data[0]
+
+
+def create_order(
+    business_id: str,
+    customer_id: str,
+    resolved_items: list[tuple[dict[str, Any], int]],
+    total: float,
+) -> dict[str, Any]:
+    client = get_client()
+    seq = client.rpc("next_order_seq", {"b_id": business_id}).execute().data
+    order_number = f"ORD-{seq}"
+    order = (
+        client.table("orders")
+        .insert(
+            {
+                "business_id": business_id,
+                "customer_id": customer_id,
+                "order_number": order_number,
+                "total_amount": total,
+            }
+        )
+        .execute()
+        .data[0]
+    )
+    client.table("order_items").insert(
+        [
+            {
+                "order_id": order["id"],
+                "product_id": product["id"],
+                "description": product["name"],
+                "quantity": qty,
+                "unit_price": float(product["price"]),
+                "line_total": round(float(product["price"]) * qty, 2),
+            }
+            for product, qty in resolved_items
+        ]
+    ).execute()
+    return order
+
+
+def get_order_by_number(business_id: str, order_number: str) -> dict[str, Any] | None:
+    resp = (
+        get_client()
+        .table("orders")
+        .select("*")
+        .eq("business_id", business_id)
+        .eq("order_number", order_number)
+        .limit(1)
+        .execute()
+    )
+    return resp.data[0] if resp.data else None
+
+
+def get_open_orders(business_id: str, limit: int = 200) -> list[dict[str, Any]]:
+    resp = (
+        get_client()
+        .table("orders")
+        .select("*")
+        .eq("business_id", business_id)
+        .eq("status", "pending_payment")
+        .order("created_at", desc=False)
+        .limit(limit)
+        .execute()
+    )
+    return resp.data or []
+
+
+def update_order_status(
+    order_id: str, status: str, *, paid: bool = False, pop_submission_id: str | None = None
+) -> None:
+    fields: dict[str, Any] = {"status": status}
+    if paid:
+        fields["paid_at"] = "now()"
+    if pop_submission_id:
+        fields["pop_submission_id"] = pop_submission_id
+    get_client().table("orders").update(fields).eq("id", order_id).execute()
+
+
 # --- verification_log ---------------------------------------------------------
 
 

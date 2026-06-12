@@ -153,10 +153,17 @@ def reconcile_business(business: dict[str, Any]) -> dict[str, int]:
             [{"name": "reconciliation_match", "passed": True, "detail": f"matched {pair.transaction.id}"}],
         )
         # Close the loop on debt: a verified payment settles open reminders
-        # for that customer at the same amount.
+        # for that customer at the same amount, and any open order it pays for.
         sub = next((s for s in open_subs if s["id"] == pair.submission_id), None)
         if sub and sub.get("customer_id"):
             db.mark_reminders_paid(business_id, sub["customer_id"], pair.transaction.amount)
+        extraction = next((e for sid, e in submissions if sid == pair.submission_id), None)
+        if extraction is not None:
+            from app.services.orders import settle_order_for_submission
+
+            settle_order_for_submission(
+                business_id, pair.submission_id, extraction, (sub or {}).get("customer_id")
+            )
         verified += 1
 
     digest = format_reconciliation_digest(

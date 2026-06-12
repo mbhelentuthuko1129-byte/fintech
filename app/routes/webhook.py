@@ -7,6 +7,7 @@ import logging
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request, Response
 
 from app.config import get_settings
+from app.services.orders import handle_inbound_text
 from app.services.pipeline import process_image_message
 from app.services.whatsapp import verify_webhook_signature
 
@@ -40,17 +41,24 @@ async def receive(request: Request, background: BackgroundTasks):
             phone_number_id = (value.get("metadata") or {}).get("phone_number_id", "")
             contacts = {c.get("wa_id"): (c.get("profile") or {}).get("name") for c in value.get("contacts", [])}
             for message in value.get("messages", []):
-                if message.get("type") != "image":
-                    continue
                 sender = message.get("from", "")
-                background.add_task(
-                    process_image_message,
-                    phone_number_id=phone_number_id,
-                    sender_wa_id=sender,
-                    sender_name=contacts.get(sender),
-                    media_id=message["image"]["id"],
-                    message_id=message.get("id", ""),
-                )
+                if message.get("type") == "image":
+                    background.add_task(
+                        process_image_message,
+                        phone_number_id=phone_number_id,
+                        sender_wa_id=sender,
+                        sender_name=contacts.get(sender),
+                        media_id=message["image"]["id"],
+                        message_id=message.get("id", ""),
+                    )
+                elif message.get("type") == "text":
+                    background.add_task(
+                        handle_inbound_text,
+                        phone_number_id=phone_number_id,
+                        sender_wa_id=sender,
+                        sender_name=contacts.get(sender),
+                        text=(message.get("text") or {}).get("body", ""),
+                    )
 
     # Always 200 quickly; Meta retries aggressively on non-2xx.
     return {"status": "received"}

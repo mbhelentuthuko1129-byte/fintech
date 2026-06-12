@@ -72,8 +72,8 @@ tests/                  decision engine + matching unit tests
 
 ### 2. Database
 
-Apply `supabase/schema.sql`, then `supabase/migrations/0002_phase2.sql`, in the
-Supabase SQL editor (or `supabase db push`). Then register a tenant:
+Apply `supabase/schema.sql`, then the files in `supabase/migrations/` in order,
+in the Supabase SQL editor (or `supabase db push`). Then register a tenant:
 
 ```sql
 insert into businesses (name, whatsapp_phone_number_id, owner_whatsapp_number, pricing_tier)
@@ -157,11 +157,34 @@ All secrets come from the environment — nothing is hardcoded.
   `whatsapp_message_id` + early return) and tier enforcement (submissions past
   the monthly limit are rejected with an upgrade nudge to the owner).
 
-## How Phases 3–4 build on this schema
+## Phase 3 — WhatsApp order management (built)
 
-- **Phase 3 — Orders:** a new `orders` module links to `customers` and
-  `pop_submissions` by FK; order/invoice creation auto-populates
-  `reminder_schedule`; the verification core is untouched.
-- **Phase 4 — Invoicing & reporting:** invoices hang off orders/customers;
-  `verification_log` + `usage_counters` already feed the fraud-rate and volume
-  reporting in Retool.
+A distinct module (`app/services/orders.py`, `app/services/order_chat.py`) that
+integrates with — but doesn't replace — the verification core. Text messages on
+the business number are now handled:
+
+**Customers** can text:
+- `catalog` / `menu` — product list with prices
+- `order 2x white bread, 1x milk` — places an order; the reply includes the
+  total, the owner's payment details, and the order number to use as the
+  payment reference
+- `status ORD-12` — order status
+- Free text ("can I get two loaves please") falls back to Claude structured
+  parsing against the catalog
+
+**Owners** (messages from the configured owner number) can text:
+- `add product <name> <price>` · `orders` · `fulfil ORD-12` · `cancel ORD-12`
+
+**The loop closes through verification:** customers are told to pay with the
+order number as reference, so when their PoP screenshot is verified (live or by
+nightly reconciliation), the matching open order is automatically marked
+`paid`, linked to the submission, and the owner's verdict message includes
+"Order ORD-12 marked as paid". Order statuses: `pending_payment → paid →
+fulfilled` (cancellable until fulfilled).
+
+## How Phase 4 builds on this schema
+
+- **Phase 4 — Invoicing & reporting:** invoices hang off `orders` /
+  `order_items` / `customers` (quantities and prices are already denormalised
+  per line); `verification_log` + `usage_counters` + `orders` feed the
+  revenue, fraud-rate and volume reporting in Retool.

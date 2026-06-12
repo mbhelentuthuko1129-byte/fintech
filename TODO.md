@@ -26,13 +26,29 @@
 - [ ] **Reminder settle heuristics**: reconciliation marks reminders paid only on
       exact customer + amount match; partial payments and overpayments need rules.
 
-## Phase 3 — WhatsApp Order Management
+## Phase 3 — WhatsApp Order Management (BUILT)
 
-- [ ] Product/service catalog tables (`products`, `orders`, `order_items`) per tenant.
-- [ ] Conversational order intake (WhatsApp interactive messages / list replies).
-- [ ] Order status tracking; link orders to `pop_submissions` and `customers`.
-- [ ] Keep this a distinct module that integrates with — not replaces — the
-      verification core.
+- [x] Product/service catalog (`products`), orders (`orders`, `order_items`) per
+      tenant with RLS; per-business order numbering via `next_order_seq` RPC.
+- [x] Conversational order intake: deterministic command grammar + Claude
+      structured-output fallback for free text (`order_chat.py`).
+- [x] Order status tracking (`pending_payment → paid → fulfilled`, cancellable);
+      owner commands over WhatsApp (add product / orders / fulfil / cancel).
+- [x] Orders linked to `pop_submissions` and `customers`: a VERIFIED PoP whose
+      reference matches an open order (or unique customer+amount) marks it paid —
+      from the live pipeline and from nightly reconciliation.
+
+### Phase 3 follow-ups
+
+- [ ] **Interactive messages**: replace text commands with WhatsApp list/reply
+      buttons for catalog browsing and order confirmation (better UX, fewer typos).
+- [ ] **Order edits**: "add 1x milk to ORD-12", partial fulfilment, customer
+      cancellation requests.
+- [ ] **Unpaid-order reminders**: auto-create `reminder_schedule` rows when an
+      order stays `pending_payment` for N days (bridges Phase 2 reminders).
+- [ ] **Ambiguity dialogue**: when a product name is ambiguous ("bread"), ask the
+      customer to pick instead of failing the whole order.
+- [ ] **Stock/quantity tracking** if SMEs ask for it (out of scope for now).
 
 ## Phase 4 — Automated Invoicing & Sales Reporting
 

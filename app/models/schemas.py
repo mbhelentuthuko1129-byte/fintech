@@ -17,6 +17,13 @@ class Verdict(str, Enum):
     FAKE = "FAKE"
 
 
+class OrderStatus(str, Enum):
+    PENDING_PAYMENT = "pending_payment"
+    PAID = "paid"
+    FULFILLED = "fulfilled"
+    CANCELLED = "cancelled"
+
+
 class TamperFlag(str, Enum):
     FONT_MISMATCH = "font_mismatch"
     ALIGNMENT_IRREGULARITY = "alignment_irregularity"
