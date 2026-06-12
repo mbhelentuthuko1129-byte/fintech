@@ -40,6 +40,27 @@ def process_image_message(
     business_id = business["id"]
     owner_number = business.get("owner_whatsapp_number") or sender_wa_id
 
+    # Idempotency: Meta retries webhook deliveries on slow/missing ACKs.
+    if message_id and db.submission_exists(message_id):
+        logger.info("duplicate webhook delivery ignored", extra={"message_id": message_id})
+        return
+
+    # Tier enforcement: usage_counters vs the business's monthly limit.
+    limit = business.get("monthly_verification_limit") or 0
+    if limit and db.get_usage_count(business_id) >= limit:
+        logger.warning("monthly verification limit reached", extra={"business_id": business_id, "limit": limit})
+        try:
+            whatsapp.send_text(
+                phone_number_id,
+                owner_number,
+                f"⚠️ You've reached your monthly limit of {limit} PoP verifications "
+                f"on the {business.get('pricing_tier', 'starter').title()} plan. "
+                "This screenshot was NOT checked. Upgrade your plan to keep verifying.",
+            )
+        except Exception:
+            logger.exception("failed to send limit-reached notice")
+        return
+
     # 2. Download, hash, store.
     image_bytes, mime_type = whatsapp.download_media(media_id)
     sha256 = sha256_hex(image_bytes)

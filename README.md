@@ -72,8 +72,8 @@ tests/                  decision engine + matching unit tests
 
 ### 2. Database
 
-Apply `supabase/schema.sql` in the Supabase SQL editor (or `supabase db push`).
-Then register a tenant:
+Apply `supabase/schema.sql`, then `supabase/migrations/0002_phase2.sql`, in the
+Supabase SQL editor (or `supabase db push`). Then register a tenant:
 
 ```sql
 insert into businesses (name, whatsapp_phone_number_id, owner_whatsapp_number, pricing_tier)
@@ -105,15 +105,18 @@ docker build -t pop-verify .
 docker run --env-file .env -p 8000:8000 pop-verify
 ```
 
-### 6. n8n nightly reconciliation
+### 6. n8n automation workflows
 
-Create an n8n workflow (self-hosted on Railway) with:
-1. **Cron** node — daily, e.g. 02:00 SAST
-2. **HTTP Request** node — `POST https://<api>/internal/recheck-pending`
-   with header `X-Internal-Api-Key: $INTERNAL_API_KEY`
+All internal endpoints require the `X-Internal-Api-Key: $INTERNAL_API_KEY` header.
+Create two n8n workflows (self-hosted on Railway), each a Cron node + HTTP Request node:
 
-The endpoint re-matches all `PENDING` submissions against fresh Stitch data,
-flips matches to `VERIFIED`, and notifies owners on WhatsApp.
+| Workflow | Schedule | Endpoint | What it does |
+|---|---|---|---|
+| Nightly reconciliation | daily 02:00 SAST | `POST /internal/reconcile` | Syncs Stitch transactions for every linked business, matches them against open submissions, flips confirmed `PENDING`s to `VERIFIED`, settles paid reminders, and WhatsApps the owner a digest of unmatched money / unmatched claims |
+| Payment reminders | daily 09:00 SAST | `POST /internal/send-reminders` | Scans `reminder_schedule` and sends WhatsApp reminders to customers (first on due date, follow-ups every `REMINDER_CADENCE_DAYS`, capped at `REMINDER_MAX_SENDS`) |
+
+`POST /internal/recheck-pending` is still available for ad-hoc re-checks of the
+pending queue only.
 
 ## Environment variables
 
@@ -135,16 +138,30 @@ All secrets come from the environment — nothing is hardcoded.
 - Usage is metered per business per month in `usage_counters`; tier limits are a
   column on `businesses`, ready for enforcement when billing (PayFast) lands.
 
-## How Phases 2–4 build on this schema
+## Phase 2 — Reconciliation, reminders & debtors (built)
 
-- **Phase 2 — Reconciliation, reminders, debtors:** `bank_transactions` already
-  stores every synced Stitch transaction with a `reconciled` flag; reconciliation
-  is a view over it joined to `pop_submissions.matched_transaction_id`.
-  `reminder_schedule` exists (table only) and `customers.outstanding_balance`
-  is the cached debtor figure. The nightly n8n hook generalises into the full
-  reconciliation + reminder dispatcher.
+- **Reconciliation** (`app/services/reconciliation.py`): nightly, every synced
+  Stitch transaction is matched 1:1 against open submissions (a deposit settles
+  at most one claim, oldest first). Matches flip to `VERIFIED`, settle the
+  customer's open reminders, and the owner gets a WhatsApp digest of money with
+  no matching PoP and PoPs with no matching money.
+- **Reminders** (`app/services/reminders.py`): `reminder_schedule` rows (created
+  by the owner in Retool) drive WhatsApp reminders to customers — first on the
+  due date, follow-ups on a cadence, capped. Reminders invite the customer to
+  reply with a PoP, which feeds straight back into the verification core.
+- **Debtor management**: Retool reads the `v_debtors` view — per-customer
+  outstanding balance with aging buckets (current / 30 / 60 / 90 / 90+) —
+  plus `v_unreconciled_transactions` and `v_unmatched_submissions`. All three
+  views use `security_invoker` so tenant RLS applies.
+- Also landed with Phase 2: webhook idempotency (unique index on
+  `whatsapp_message_id` + early return) and tier enforcement (submissions past
+  the monthly limit are rejected with an upgrade nudge to the owner).
+
+## How Phases 3–4 build on this schema
+
 - **Phase 3 — Orders:** a new `orders` module links to `customers` and
-  `pop_submissions` by FK; the verification core is untouched.
+  `pop_submissions` by FK; order/invoice creation auto-populates
+  `reminder_schedule`; the verification core is untouched.
 - **Phase 4 — Invoicing & reporting:** invoices hang off orders/customers;
   `verification_log` + `usage_counters` already feed the fraud-rate and volume
   reporting in Retool.

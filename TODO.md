@@ -1,19 +1,30 @@
 # Roadmap & Deferred Items
 
-## Phase 2 — Reconciliation, Reminders & Debtors (next, post-launch)
+## Phase 2 — Reconciliation, Reminders & Debtors (BUILT)
 
-- [ ] **Bank reconciliation view**: match *all* incoming Stitch transactions against
-      `pop_submissions`; surface unmatched transactions and unmatched submissions to
-      the owner. Schema is ready (`bank_transactions.reconciled`,
-      `pop_submissions.matched_transaction_id`); build the matching job (extend
-      `recheck_pending_submissions`) and a Retool reconciliation page.
-- [ ] **Payment reminders**: n8n workflow scanning `customers` with outstanding
-      balances; sends scheduled WhatsApp reminders via template messages
-      (template approval required from Meta). Uses `reminder_schedule` (table exists,
-      no logic yet).
-- [ ] **Debtor management**: Retool view over `customers` + `pop_submissions` +
-      `bank_transactions` with aging buckets (current / 30 / 60 / 90+ days). Add a
-      job to maintain `customers.outstanding_balance`.
+- [x] **Bank reconciliation**: `app/services/reconciliation.py` + nightly
+      `/internal/reconcile`; unmatched money/claims surfaced to the owner via
+      WhatsApp digest and to Retool via `v_unreconciled_transactions` /
+      `v_unmatched_submissions`.
+- [x] **Payment reminders**: `app/services/reminders.py` + daily
+      `/internal/send-reminders`; cadence + cap configurable; uses `reminder_schedule`.
+- [x] **Debtor management**: `v_debtors` view with aging buckets;
+      `customers.outstanding_balance` maintained by trigger.
+
+### Phase 2 follow-ups
+
+- [ ] **Meta template messages for reminders**: free-form messages only deliver
+      inside the 24-hour customer-service window. Reminders to customers who
+      haven't messaged recently need an approved WhatsApp template
+      (`/messages` with `type: template`). Current implementation will silently
+      fail outside the window for cold contacts.
+- [ ] **Reminder creation UX**: rows are created via Retool today; Phase 3
+      should auto-create them from orders/invoices, and a WhatsApp owner command
+      ("remind 0821234567 R1500 INV-9 by Friday") is a natural Growth-tier feature.
+- [ ] **Retool pages**: build the actual dashboards on `v_debtors`,
+      `v_unreconciled_transactions`, `v_unmatched_submissions`.
+- [ ] **Reminder settle heuristics**: reconciliation marks reminders paid only on
+      exact customer + amount match; partial payments and overpayments need rules.
 
 ## Phase 3 — WhatsApp Order Management
 
@@ -31,10 +42,12 @@
 
 ## Deferred items identified during Phase 1
 
-- [ ] **Tier enforcement**: `usage_counters` is metered and
-      `businesses.monthly_verification_limit` exists, but limits aren't enforced.
-      Wire a check at the top of the pipeline + an upgrade nudge message.
-- [ ] **PayFast billing** for the SaaS itself (subscriptions per tier).
+- [x] **Tier enforcement**: pipeline now rejects submissions past
+      `monthly_verification_limit` and nudges the owner to upgrade. (Phase 2)
+- [x] **Webhook idempotency**: unique index on `whatsapp_message_id` + early
+      return in the pipeline. (Phase 2)
+- [ ] **PayFast billing** for the SaaS itself (subscriptions per tier; limits
+      per tier should move from the manual column to tier config when billing lands).
 - [ ] **Stitch account linking flow**: user-consent OAuth so businesses can link
       their bank account from WhatsApp/onboarding; currently `stitch_account_id`
       is set manually. Verify the GraphQL transaction query against a Stitch
@@ -42,8 +55,6 @@
 - [ ] **pHash duplicate check at scale**: currently compares against the most
       recent 2000 submissions in app code. Move to a Postgres Hamming-distance
       function (or pgvector) when volume grows.
-- [ ] **Webhook idempotency**: Meta retries deliveries; dedupe on
-      `whatsapp_message_id` before processing (unique index + early return).
 - [ ] **EXIF/metadata checks**: forwarded WhatsApp images are stripped of EXIF,
       so Phase 1 relies on Claude Vision + hashing; revisit raw-metadata heuristics
       for images sent as documents.

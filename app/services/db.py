@@ -77,6 +77,21 @@ def upsert_customer(business_id: str, phone: str, name: str | None) -> dict[str,
 # --- pop_submissions ----------------------------------------------------------
 
 
+def submission_exists(whatsapp_message_id: str) -> bool:
+    """Idempotency check: Meta retries webhook deliveries."""
+    if not whatsapp_message_id:
+        return False
+    resp = (
+        get_client()
+        .table("pop_submissions")
+        .select("id")
+        .eq("whatsapp_message_id", whatsapp_message_id)
+        .limit(1)
+        .execute()
+    )
+    return bool(resp.data)
+
+
 def find_duplicate_submission(sha256: str, phash: str) -> dict[str, Any] | None:
     """Cross-tenant duplicate check: exact byte match first, then perceptual
     near-match against recent submissions."""
@@ -122,6 +137,21 @@ def get_pending_submissions(limit: int = 200) -> list[dict[str, Any]]:
     return resp.data or []
 
 
+def get_open_submissions(business_id: str, limit: int = 500) -> list[dict[str, Any]]:
+    """Submissions not yet settled by money arriving (reconciliation input)."""
+    resp = (
+        get_client()
+        .table("pop_submissions")
+        .select("id, customer_id, extracted_data, verdict, created_at")
+        .eq("business_id", business_id)
+        .in_("verdict", ["PENDING", "SUSPICIOUS"])
+        .order("created_at", desc=False)
+        .limit(limit)
+        .execute()
+    )
+    return resp.data or []
+
+
 # --- bank_transactions --------------------------------------------------------
 
 
@@ -145,6 +175,70 @@ def sync_bank_transactions(business_id: str, transactions: list[BankTransaction]
     ).execute()
 
 
+def get_unreconciled_transactions(business_id: str, limit: int = 1000) -> list[dict[str, Any]]:
+    resp = (
+        get_client()
+        .table("bank_transactions")
+        .select("*")
+        .eq("business_id", business_id)
+        .eq("reconciled", False)
+        .order("transaction_date", desc=False)
+        .limit(limit)
+        .execute()
+    )
+    return resp.data or []
+
+
+def mark_transaction_reconciled(business_id: str, stitch_transaction_id: str, submission_id: str) -> None:
+    get_client().table("bank_transactions").update(
+        {"reconciled": True, "matched_submission_id": submission_id, "reconciled_at": "now()"}
+    ).eq("business_id", business_id).eq("stitch_transaction_id", stitch_transaction_id).execute()
+
+
+def get_stitch_linked_businesses() -> list[dict[str, Any]]:
+    resp = (
+        get_client()
+        .table("businesses")
+        .select("*")
+        .eq("stitch_linked", True)
+        .not_.is_("stitch_account_id", "null")
+        .execute()
+    )
+    return resp.data or []
+
+
+# --- reminder_schedule ----------------------------------------------------------
+
+
+def get_open_reminders(limit: int = 1000) -> list[dict[str, Any]]:
+    resp = (
+        get_client()
+        .table("reminder_schedule")
+        .select("*, customers!inner(id, name, phone), businesses!inner(id, name, whatsapp_phone_number_id)")
+        .in_("status", ["scheduled", "sent"])
+        .order("due_date", desc=False)
+        .limit(limit)
+        .execute()
+    )
+    return resp.data or []
+
+
+def record_reminder_sent(reminder_id: str, new_send_count: int) -> None:
+    get_client().table("reminder_schedule").update(
+        {"status": "sent", "send_count": new_send_count, "last_sent_at": "now()"}
+    ).eq("id", reminder_id).execute()
+
+
+def mark_reminders_paid(business_id: str, customer_id: str, amount: float) -> None:
+    """A verified payment settles open reminders for that customer at the
+    same amount. The reminder_schedule trigger refreshes outstanding_balance."""
+    get_client().table("reminder_schedule").update({"status": "paid"}).eq(
+        "business_id", business_id
+    ).eq("customer_id", customer_id).eq("due_amount", amount).in_(
+        "status", ["scheduled", "sent"]
+    ).execute()
+
+
 # --- verification_log ---------------------------------------------------------
 
 
@@ -163,6 +257,21 @@ def insert_verification_log(
 
 
 # --- usage_counters -----------------------------------------------------------
+
+
+def get_usage_count(business_id: str) -> int:
+    """Current month's verification count (tier enforcement)."""
+    period = datetime.now(timezone.utc).strftime("%Y-%m")
+    resp = (
+        get_client()
+        .table("usage_counters")
+        .select("verification_count")
+        .eq("business_id", business_id)
+        .eq("period", period)
+        .limit(1)
+        .execute()
+    )
+    return resp.data[0]["verification_count"] if resp.data else 0
 
 
 def increment_usage(business_id: str) -> int:

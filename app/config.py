@@ -46,6 +46,10 @@ class Settings(BaseSettings):
     amount_tolerance_cents: int = 0  # exact amount match by default
     min_extraction_confidence: float = 0.5
 
+    # --- Payment reminders (Phase 2) ---
+    reminder_cadence_days: int = 3  # days between follow-ups once a debt is overdue
+    reminder_max_sends: int = 3  # stop nagging after this many reminders
+
 
 @lru_cache
 def get_settings() -> Settings:
