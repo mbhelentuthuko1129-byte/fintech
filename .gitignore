@@ -4,3 +4,7 @@ __pycache__/
 *.pyd
 .Python
 *.db-journal
+.env
+.venv/
+.pytest_cache/
+nohup.out
