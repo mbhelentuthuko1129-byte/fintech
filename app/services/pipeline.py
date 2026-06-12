@@ -144,7 +144,7 @@ def process_image_message(
         from app.services.orders import settle_order_for_submission
 
         settled_order = settle_order_for_submission(
-            business_id, submission["id"], extraction, customer["id"]
+            business, submission["id"], extraction, customer["id"]
         )
 
     # 9. Notify the business owner.

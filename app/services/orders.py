@@ -117,6 +117,8 @@ OWNER_HELP_TEXT = (
     "• *add product <name> <price>*\n"
     "• *orders* — open orders\n"
     "• *fulfil ORD-12* / *cancel ORD-12*\n"
+    "• *invoice ORD-12* — send the PDF invoice\n"
+    "• *report* — this month's sales & fraud stats\n"
     "Customer commands (catalog/order/status) also work."
 )
 
@@ -190,6 +192,27 @@ def _execute_command(
             lines.append(f"• {o['order_number']} — ZAR {float(o['total_amount']):,.2f} ({_STATUS_TEXT[OrderStatus(o['status'])]})")
         return "\n".join(lines)
 
+    if command.intent == Intent.INVOICE:
+        from app.services.invoices import issue_invoice_for_order
+
+        if not command.order_number:
+            return "Which order? Reply e.g.: invoice ORD-12"
+        order = db.get_order_by_number(business_id, command.order_number)
+        if order is None:
+            return f"I couldn't find order {command.order_number}."
+        invoice = issue_invoice_for_order(business, order, send_to_customer=True)
+        if invoice is None:
+            return f"Couldn't generate an invoice for {command.order_number} (no customer or items)."
+        return f"✅ Invoice {invoice['invoice_number']} sent to the customer."
+
+    if command.intent == Intent.REPORT:
+        from datetime import date as _date
+
+        from app.services.invoices import format_sales_report
+
+        stats = db.get_monthly_stats(business_id)
+        return format_sales_report(business.get("name", ""), f"{_date.today():%B %Y}", stats)
+
     if command.intent in (Intent.FULFIL, Intent.CANCEL):
         target = OrderStatus.FULFILLED if command.intent == Intent.FULFIL else OrderStatus.CANCELLED
         order = db.get_order_by_number(business_id, command.order_number)
@@ -234,16 +257,17 @@ def _execute_command(
 
 
 def settle_order_for_submission(
-    business_id: str,
+    business: dict[str, Any],
     submission_id: str,
     extraction: PoPExtraction,
     customer_id: str | None,
 ) -> str | None:
     """Called when a PoP submission becomes VERIFIED: if the payment settles an
-    open order, mark it paid and link the submission. Returns the order number
-    (for the owner notification) or None."""
+    open order, mark it paid, link the submission, and send the customer their
+    paid invoice. Returns the order number (for the owner notification) or None."""
     from app.services import db
 
+    business_id = business["id"]
     open_orders = db.get_open_orders(business_id)
     order = find_order_for_payment(extraction, open_orders, customer_id=customer_id)
     if order is None:
@@ -254,4 +278,14 @@ def settle_order_for_submission(
         "order settled by verified PoP",
         extra={"order_number": order["order_number"], "submission_id": submission_id},
     )
+
+    # Phase 4: auto-issue the (paid) invoice. Never let invoicing break settlement.
+    try:
+        from app.services.invoices import issue_invoice_for_order
+
+        order["status"] = OrderStatus.PAID.value
+        issue_invoice_for_order(business, order, send_to_customer=True)
+    except Exception:
+        logger.exception("auto-invoice failed", extra={"order_number": order["order_number"]})
+
     return order["order_number"]

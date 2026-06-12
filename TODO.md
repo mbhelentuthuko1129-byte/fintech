@@ -50,11 +50,26 @@
       customer to pick instead of failing the whole order.
 - [ ] **Stock/quantity tracking** if SMEs ask for it (out of scope for now).
 
-## Phase 4 — Automated Invoicing & Sales Reporting
+## Phase 4 — Automated Invoicing & Sales Reporting (BUILT)
 
-- [ ] PDF invoice generation (numbering, templating) tied to orders and customers.
-- [ ] Sales reporting dashboard in Retool: revenue, verification volume, fraud rate,
-      top customers.
+- [x] PDF invoice generation (per-business numbering, reportlab template, SA VAT
+      handling) tied to orders and customers; auto-issued on payment, on-demand
+      via `invoice ORD-12`, delivered as WhatsApp documents, stored in the
+      private `invoices` bucket.
+- [x] Sales reporting: `v_sales_monthly`, `v_fraud_stats_monthly`,
+      `v_top_customers` views for Retool + owner `report` command in chat
+      (revenue, volumes, fraud rate, top customers).
+
+### Phase 4 follow-ups
+
+- [ ] **Retool dashboard build-out**: wire the three reporting views into actual
+      pages (the views are ready; the dashboard itself is config work in Retool).
+- [ ] **Invoice templating per tenant**: logo upload, address block, custom
+      footer; current layout is a clean shared template.
+- [ ] **Credit notes / voiding flow**: `invoices.status='void'` exists but
+      there's no command or UI for it yet.
+- [ ] **Standalone invoices**: invoices currently require an order; quoting and
+      ad-hoc invoicing without an order is a natural extension.
 
 ## Deferred items identified during Phase 1
 

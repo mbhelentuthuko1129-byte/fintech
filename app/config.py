@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     supabase_url: str = ""
     supabase_service_role_key: str = ""  # backend uses service role; RLS protects other clients
     supabase_storage_bucket: str = "pop-images"
+    supabase_invoice_bucket: str = "invoices"
 
     # --- Internal automation (n8n) ---
     internal_api_key: str = ""  # shared secret for /internal/* endpoints called by n8n

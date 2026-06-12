@@ -162,7 +162,7 @@ def reconcile_business(business: dict[str, Any]) -> dict[str, int]:
             from app.services.orders import settle_order_for_submission
 
             settle_order_for_submission(
-                business_id, pair.submission_id, extraction, (sub or {}).get("customer_id")
+                business, pair.submission_id, extraction, (sub or {}).get("customer_id")
             )
         verified += 1
 

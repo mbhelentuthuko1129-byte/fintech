@@ -33,6 +33,8 @@ class Intent(str, Enum):
     LIST_ORDERS = "list_orders"
     FULFIL = "fulfil"
     CANCEL = "cancel"
+    INVOICE = "invoice"
+    REPORT = "report"
     HELP = "help"
     UNKNOWN = "unknown"
 
@@ -126,7 +128,9 @@ def parse_owner_command(text: str) -> ParsedCommand:
         )
     if lower in {"orders", "open orders", "list orders"}:
         return ParsedCommand(intent=Intent.LIST_ORDERS)
-    for verb, intent in (("fulfil", Intent.FULFIL), ("fulfill", Intent.FULFIL), ("done", Intent.FULFIL), ("cancel", Intent.CANCEL)):
+    if lower in {"report", "sales", "sales report", "stats"}:
+        return ParsedCommand(intent=Intent.REPORT)
+    for verb, intent in (("fulfil", Intent.FULFIL), ("fulfill", Intent.FULFIL), ("done", Intent.FULFIL), ("cancel", Intent.CANCEL), ("invoice", Intent.INVOICE)):
         if lower.startswith(verb):
             m = _ORDER_NO_RE.search(cleaned)
             if m:

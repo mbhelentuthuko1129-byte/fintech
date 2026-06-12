@@ -9,3 +9,4 @@ Pillow>=10.3
 ImageHash>=4.3
 python-json-logger>=2.0
 pytest>=8.2
+reportlab>=4.0

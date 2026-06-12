@@ -344,6 +344,104 @@ def update_order_status(
     get_client().table("orders").update(fields).eq("id", order_id).execute()
 
 
+def get_customer(customer_id: str) -> dict[str, Any] | None:
+    resp = get_client().table("customers").select("*").eq("id", customer_id).limit(1).execute()
+    return resp.data[0] if resp.data else None
+
+
+def get_order_items(order_id: str) -> list[dict[str, Any]]:
+    resp = get_client().table("order_items").select("*").eq("order_id", order_id).execute()
+    return resp.data or []
+
+
+# --- invoices (Phase 4) ----------------------------------------------------------
+
+
+def next_invoice_seq(business_id: str) -> int:
+    return get_client().rpc("next_invoice_seq", {"b_id": business_id}).execute().data
+
+
+def get_invoice_by_order(order_id: str) -> dict[str, Any] | None:
+    resp = get_client().table("invoices").select("*").eq("order_id", order_id).limit(1).execute()
+    return resp.data[0] if resp.data else None
+
+
+def create_invoice(record: dict[str, Any]) -> dict[str, Any]:
+    return get_client().table("invoices").insert(record).execute().data[0]
+
+
+def update_invoice(invoice_id: str, fields: dict[str, Any]) -> None:
+    get_client().table("invoices").update(fields).eq("id", invoice_id).execute()
+
+
+def upload_invoice_pdf(path: str, pdf_bytes: bytes) -> str:
+    bucket = get_settings().supabase_invoice_bucket
+    get_client().storage.from_(bucket).upload(
+        path, pdf_bytes, {"content-type": "application/pdf", "upsert": "true"}
+    )
+    return path
+
+
+def get_monthly_stats(business_id: str) -> dict[str, Any]:
+    """Current-month sales + fraud stats for the owner `report` command.
+    Aggregated in app code — per-tenant monthly volumes are small."""
+    client = get_client()
+    month_start = datetime.now(timezone.utc).strftime("%Y-%m-01")
+
+    orders = (
+        client.table("orders")
+        .select("status, total_amount")
+        .eq("business_id", business_id)
+        .gte("created_at", month_start)
+        .execute()
+        .data
+        or []
+    )
+    subs = (
+        client.table("pop_submissions")
+        .select("verdict")
+        .eq("business_id", business_id)
+        .gte("created_at", month_start)
+        .execute()
+        .data
+        or []
+    )
+    invoices = (
+        client.table("invoices")
+        .select("id")
+        .eq("business_id", business_id)
+        .gte("created_at", month_start)
+        .execute()
+        .data
+        or []
+    )
+    top = (
+        client.table("v_top_customers")
+        .select("name, phone, total_revenue")
+        .eq("business_id", business_id)
+        .order("total_revenue", desc=True)
+        .limit(3)
+        .execute()
+        .data
+        or []
+    )
+
+    paid = [o for o in orders if o["status"] in ("paid", "fulfilled")]
+    verdicts = [s["verdict"] for s in subs]
+    return {
+        "orders_placed": len(orders),
+        "orders_paid": len(paid),
+        "revenue": sum(float(o["total_amount"]) for o in paid),
+        "invoices_issued": len(invoices),
+        "submissions": len(verdicts),
+        "verified": verdicts.count("VERIFIED"),
+        "pending": verdicts.count("PENDING"),
+        "suspicious": verdicts.count("SUSPICIOUS"),
+        "fake": verdicts.count("FAKE"),
+        "top_customers": top,
+    }
+
+
 # --- verification_log ---------------------------------------------------------
 
 

@@ -182,9 +182,19 @@ nightly reconciliation), the matching open order is automatically marked
 "Order ORD-12 marked as paid". Order statuses: `pending_payment → paid →
 fulfilled` (cancellable until fulfilled).
 
-## How Phase 4 builds on this schema
+## Phase 4 — Automated invoicing & sales reporting (built)
 
-- **Phase 4 — Invoicing & reporting:** invoices hang off `orders` /
-  `order_items` / `customers` (quantities and prices are already denormalised
-  per line); `verification_log` + `usage_counters` + `orders` feed the
-  revenue, fraud-rate and volume reporting in Retool.
+- **PDF invoices** (`app/services/invoices.py`): numbered per business
+  (`INV-00042` via `next_invoice_seq` RPC), one invoice per order, rendered
+  with reportlab and delivered to the customer as a WhatsApp document.
+  VAT-registered businesses get a TAX INVOICE with the VAT portion carved out
+  of the inclusive total (SA convention, 15% default, configurable per
+  business); others get a plain invoice. PDFs are stored in the private
+  `invoices` bucket.
+- **Triggers**: when a verified PoP settles an order, the paid invoice is
+  auto-issued and sent; owners can also text `invoice ORD-12` to (re)send one
+  on demand. Re-issuing keeps the original invoice number.
+- **Sales reporting**: owners text `report` for the month's revenue, order
+  volume, invoice count, verification breakdown, fraud rate and top customers
+  in chat. Retool reads `v_sales_monthly`, `v_fraud_stats_monthly` and
+  `v_top_customers` (all `security_invoker`, so tenant RLS applies).

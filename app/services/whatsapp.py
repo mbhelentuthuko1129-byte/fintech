@@ -63,6 +63,39 @@ def send_text(phone_number_id: str, to: str, body: str) -> None:
         resp.raise_for_status()
 
 
+def send_document(
+    phone_number_id: str, to: str, file_bytes: bytes, *, filename: str, caption: str | None = None
+) -> None:
+    """Upload a document to the WhatsApp media endpoint, then send it."""
+    with httpx.Client(timeout=60) as client:
+        upload = client.post(
+            _graph_url(f"{phone_number_id}/media"),
+            headers=_auth_headers(),
+            data={"messaging_product": "whatsapp"},
+            files={"file": (filename, file_bytes, "application/pdf")},
+        )
+        upload.raise_for_status()
+        media_id = upload.json()["id"]
+
+        document: dict = {"id": media_id, "filename": filename}
+        if caption:
+            document["caption"] = caption
+        resp = client.post(
+            _graph_url(f"{phone_number_id}/messages"),
+            headers=_auth_headers(),
+            json={
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": to,
+                "type": "document",
+                "document": document,
+            },
+        )
+        if resp.status_code >= 400:
+            logger.error("failed to send WhatsApp document", extra={"status": resp.status_code, "body": resp.text})
+        resp.raise_for_status()
+
+
 _VERDICT_EMOJI = {
     Verdict.VERIFIED: "✅",
     Verdict.PENDING: "⏳",

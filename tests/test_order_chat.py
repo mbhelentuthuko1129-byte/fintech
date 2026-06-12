@@ -90,6 +90,15 @@ class TestOwnerCommands:
         assert cmd.intent == Intent.CANCEL
         assert cmd.order_number == "ORD-7"
 
+    def test_invoice(self):
+        cmd = parse_owner_command("invoice ORD-12")
+        assert cmd.intent == Intent.INVOICE
+        assert cmd.order_number == "ORD-12"
+
+    def test_report(self):
+        for text in ("report", "sales", "stats"):
+            assert parse_owner_command(text).intent == Intent.REPORT
+
     def test_owner_falls_back_to_customer_commands(self):
         assert parse_owner_command("catalog").intent == Intent.CATALOG
 
