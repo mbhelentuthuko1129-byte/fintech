@@ -233,8 +233,8 @@ p.body { max-width: 42rem; }
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.btn-primary { background: var(--signal); color: var(--white); }
-.btn-primary:hover { background: var(--signal-ink); }
+.btn-primary { background: var(--signal); color: var(--ink); }
+.btn-primary:hover { background: var(--signal-ink); color: var(--white); }
 .btn-secondary { background: transparent; border-color: var(--ink); color: var(--ink); }
 .btn-secondary:hover { background: var(--ink); color: var(--paper); }
 .btn-group { display: flex; flex-wrap: wrap; gap: var(--space-1); }
