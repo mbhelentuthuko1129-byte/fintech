@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
         '',
         get('message')
       ];
-      var mailto = 'mailto:hello@rivance.co.za'
+      var mailto = 'mailto:rivance@gmail.com'
         + '?subject=' + encodeURIComponent(subject)
         + '&body=' + encodeURIComponent(bodyLines.join('\n'));
       window.location.href = mailto;

@@ -424,6 +424,9 @@ p.body { max-width: 42rem; }
 }
 .price-card.is-featured { border-color: var(--signal); border-width: 2px; }
 .price-card .tier-name { font-family: var(--font-mono); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.06em; color: var(--muted); }
+.price-card .tier-setup { font-family: var(--font-mono); font-size: 0.95rem; font-weight: 600; color: var(--ink); }
+.price-card .tier-setup .was { font-weight: 400; color: var(--muted); text-decoration: line-through; margin-right: 0.35em; }
+.price-card .tier-setup small { display: block; font-weight: 400; font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
 .price-card .tier-price { font-family: var(--font-display); font-weight: 800; font-size: 2rem; }
 .price-card .tier-price small { font-family: var(--font-mono); font-weight: 500; font-size: 0.85rem; color: var(--muted); }
 .price-card .tier-for { color: var(--muted); font-size: 0.9rem; }
